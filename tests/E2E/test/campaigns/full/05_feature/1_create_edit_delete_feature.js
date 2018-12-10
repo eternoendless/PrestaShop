@@ -10,7 +10,7 @@ let productData = {
   quantity: "10",
   price: '5',
   image_name: 'image_test.jpg',
-  reference: 'feat',
+  reference: 'feat2',
   feature: {
     name: 'Feature',
     value: 'Feature Value'
