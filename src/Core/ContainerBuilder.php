@@ -48,4 +48,9 @@ class ContainerBuilder
 
         return $container;
     }
+
+    public function test()
+    {
+        echo 'test';
+    }
 }
