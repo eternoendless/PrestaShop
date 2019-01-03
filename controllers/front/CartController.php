@@ -550,10 +550,8 @@ class CartControllerCore extends FrontController
     public function getTemplateVarPage()
     {
         $page = parent::getTemplateVarPage();
-        $presenter = new CartPresenter();
-        $presented_cart = $presenter->present($this->context->cart);
 
-        if (count($presented_cart['products']) == 0) {
+        if (!$this->context->cart->hasProducts()) {
             $page['body_classes']['cart-empty'] = true;
         }
 
