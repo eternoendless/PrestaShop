@@ -24,9 +24,9 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace LegacyTests\Unit\Core\Filter;
+namespace Tests\Unit\Core\Filter;
 
-use LegacyTests\Unit\Core\Filter\_Artifacts\TestLazyArray;
+use Tests\Unit\Core\Filter\_Artifacts\TestLazyArray;
 use PrestaShop\PrestaShop\Core\Filter\HashMapWhitelistFilter;
 
 class HashMapWhitelistFilterTest extends \PHPUnit\Framework\TestCase

@@ -24,7 +24,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace LegacyTests\Unit\Core\Filter;
+namespace Tests\Unit\Core\Filter;
 
 use PrestaShop\PrestaShop\Core\Filter\CollectionFilter;
 use PrestaShop\PrestaShop\Core\Filter\HashMapWhitelistFilter;

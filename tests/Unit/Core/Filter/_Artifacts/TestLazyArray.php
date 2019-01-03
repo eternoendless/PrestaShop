@@ -25,7 +25,7 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace LegacyTests\Unit\Core\Filter\_Artifacts;
+namespace Tests\Unit\Core\Filter\_Artifacts;
 
 use PrestaShop\PrestaShop\Adapter\Presenter\AbstractLazyArray;
 
