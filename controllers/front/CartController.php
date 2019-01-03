@@ -127,10 +127,7 @@ class CartControllerCore extends FrontController
         if (!$this->errors) {
             $cartPresenter = new CartPresenter();
             $presentedCart = $cartPresenter->present($this->context->cart);
-
-            // filter product output
-            $presentedCart['products'] = $this->get('prestashop.core.filter.front_end_object.product_collection')
-                ->filter($presentedCart['products']);
+            $cartFilter = $this->get('prestashop.core.filter.front_end_object.cart');
 
             $this->ajaxRender(Tools::jsonEncode([
                 'success' => true,
@@ -138,7 +135,7 @@ class CartControllerCore extends FrontController
                 'id_product_attribute' => $this->id_product_attribute,
                 'id_customization' => $this->customization_id,
                 'quantity' => $productQuantity,
-                'cart' => $presentedCart,
+                'cart' => $cartFilter->filter($presentedCart),
                 'errors' => empty($this->updateOperationError) ? '' : reset($this->updateOperationError),
             ]));
 
