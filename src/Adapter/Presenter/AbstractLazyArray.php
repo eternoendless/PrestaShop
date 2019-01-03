@@ -384,6 +384,34 @@ abstract class AbstractLazyArray implements Iterator, ArrayAccess, Countable, Js
     }
 
     /**
+     * Replaces the provided element in the LazyArray
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     *
+     * @throws RuntimeException If the offset is not defined
+     */
+    public function replace($offset, $value)
+    {
+        if (!$this->arrayAccessList->offsetExists($offset)) {
+            throw new RuntimeException(
+                sprintf(
+                    'Trying to replace index %s, which does not exist in LazyArray %s',
+                    print_r($offset, true),
+                    get_class($this)
+                )
+            );
+        }
+
+        $this->offsetSet($offset, $value, true);
+
+        // clean cache
+        if (isset($this->methodCacheResults[$offset])) {
+            unset($this->methodCacheResults[$offset]);
+        }
+    }
+
+    /**
      * @param string $methodName
      *
      * @return string
