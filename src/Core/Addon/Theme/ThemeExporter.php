@@ -108,17 +108,15 @@ class ThemeExporter
         if (empty($languages)) {
             return;
         }
+
         $catalogueDir = '';
+        /** @var \PrestaShopBundle\Entity\Lang $lang */
         foreach ($languages as $lang) {
             $locale = $lang->getLocale();
             $catalogueDir = $this->translationsExporter->exportCatalogues($theme->getName(), $locale);
         }
 
-        $catalogueDirParts = explode(DIRECTORY_SEPARATOR, $catalogueDir);
-        array_pop($catalogueDirParts); // Remove locale
-
-        $cataloguesDir = implode(DIRECTORY_SEPARATOR, $catalogueDirParts);
-        $this->fileSystem->mirror($cataloguesDir, $translationsDir);
+        $this->fileSystem->mirror($catalogueDir, $translationsDir);
     }
 
     private function createZip($sourceDir, $destinationFileName)
