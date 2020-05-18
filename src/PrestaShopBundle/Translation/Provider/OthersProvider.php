@@ -35,7 +35,7 @@ class OthersProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains()
     {
         return ['^messages*'];
     }
@@ -43,7 +43,7 @@ class OthersProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilenameFilters()
     {
         return ['#^messages*#'];
     }
@@ -59,7 +59,7 @@ class OthersProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory()
     {
         return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }

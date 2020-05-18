@@ -78,7 +78,7 @@ class SearchProvider extends AbstractProvider implements UseModuleInterface
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains()
     {
         return ['^' . preg_quote($this->domain) . '([A-Z]|$)'];
     }
@@ -86,7 +86,7 @@ class SearchProvider extends AbstractProvider implements UseModuleInterface
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilenameFilters()
     {
         return ['#^' . preg_quote($this->domain, '#') . '([A-Z]|\.|$)#'];
     }
@@ -102,7 +102,7 @@ class SearchProvider extends AbstractProvider implements UseModuleInterface
     /**
      * {@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory()
     {
         return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }
@@ -122,12 +122,12 @@ class SearchProvider extends AbstractProvider implements UseModuleInterface
     /**
      * {@inheritdoc}
      */
-    public function getXliffCatalogue()
+    public function getFilesystemCatalogue()
     {
         try {
-            $xliffCatalogue = parent::getXliffCatalogue();
+            $xliffCatalogue = parent::getFilesystemCatalogue();
         } catch (\Exception $e) {
-            $xliffCatalogue = $this->externalModuleLegacySystemProvider->getXliffCatalogue();
+            $xliffCatalogue = $this->externalModuleLegacySystemProvider->getFilesystemCatalogue();
             $xliffCatalogue = $this->filterCatalogue($xliffCatalogue);
         }
 
@@ -177,7 +177,7 @@ class SearchProvider extends AbstractProvider implements UseModuleInterface
     private function filterCatalogue(MessageCatalogueInterface $defaultCatalogue)
     {
         // return only elements whose domain matches the filters
-        $filters = $this->getFilters();
+        $filters = $this->getFilenameFilters();
         $allowedDomains = [];
 
         foreach ($defaultCatalogue->all() as $domain => $messages) {

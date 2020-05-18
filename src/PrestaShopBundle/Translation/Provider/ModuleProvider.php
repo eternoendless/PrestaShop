@@ -42,7 +42,7 @@ class ModuleProvider extends AbstractProvider implements SearchProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains()
     {
         return ['^' . preg_quote(DomainHelper::buildModuleBaseDomain($this->moduleName)) . '([A-Z]|$)'];
     }
@@ -50,7 +50,7 @@ class ModuleProvider extends AbstractProvider implements SearchProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilenameFilters()
     {
         return ['#^' . preg_quote(DomainHelper::buildModuleBaseDomain($this->moduleName)) . '([A-Z]|\.|$)#'];
     }
@@ -76,7 +76,7 @@ class ModuleProvider extends AbstractProvider implements SearchProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory()
     {
         return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }

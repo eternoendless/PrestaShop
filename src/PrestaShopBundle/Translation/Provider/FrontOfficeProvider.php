@@ -38,7 +38,7 @@ class FrontOfficeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains()
     {
         return [
             '^Shop*',
@@ -49,7 +49,7 @@ class FrontOfficeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilenameFilters()
     {
         return [
             '#^Shop*#',
@@ -70,18 +70,18 @@ class FrontOfficeProvider extends AbstractProvider
      *
      * @return MessageCatalogue
      */
-    public function getDatabaseCatalogue($themeName = null)
+    public function getUserTranslatedCatalogue($themeName = null)
     {
         if (null === $themeName) {
             $themeName = self::DEFAULT_THEME_NAME;
         }
 
-        return parent::getDatabaseCatalogue($themeName);
+        return parent::getUserTranslatedCatalogue($themeName);
     }
 
     /**{@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory()
     {
         return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }

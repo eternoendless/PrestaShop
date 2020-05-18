@@ -34,7 +34,7 @@ class BackOfficeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains(): array
     {
         return [
             '^Admin[A-Z]',
@@ -45,7 +45,7 @@ class BackOfficeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    protected function getFilenameFilters(): array
     {
         return [
             '#^Admin[A-Z]#',
@@ -64,7 +64,7 @@ class BackOfficeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory(): string
     {
         return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }

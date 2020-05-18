@@ -34,7 +34,7 @@ class MailsProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains()
     {
         return ['EmailsSubject*'];
     }
@@ -42,7 +42,7 @@ class MailsProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilenameFilters()
     {
         return ['#EmailsSubject*#'];
     }
@@ -58,7 +58,7 @@ class MailsProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory()
     {
         return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }

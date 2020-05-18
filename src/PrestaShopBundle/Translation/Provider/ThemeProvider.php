@@ -123,7 +123,7 @@ class ThemeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getTranslationDomains()
+    protected function getTranslationDomains()
     {
         if (empty($this->domain)) {
             return ['*'];
@@ -135,7 +135,7 @@ class ThemeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilenameFilters()
     {
         if (empty($this->domain)) {
             return ['*'];
@@ -155,19 +155,19 @@ class ThemeProvider extends AbstractProvider
     /**
      * Returns the path to translations directory for the current theme in the current locale
      *
-     * @param string|null $baseDir Base directory for the path. If not provided, it defaults to $this->resourceDirectory
+     * @param string|null $locale Base directory for the path. If not provided, it defaults to $this->resourceDirectory
      *
      * @return string Path to $baseDir/{themeName}/translations/{locale}
      */
-    public function getResourceDirectory($baseDir = null)
+    protected function getResourceDirectory($locale = null)
     {
-        if (null === $baseDir) {
-            $baseDir = $this->themeResourcesDirectory;
+        if (null === $locale) {
+            $locale = $this->themeResourcesDirectory;
         }
 
         $resourceDirectory = implode(
             DIRECTORY_SEPARATOR,
-            [$baseDir, $this->getThemeName(), 'translations', $this->getLocale()]
+            [$locale, $this->getThemeName(), 'translations', $this->getLocale()]
         );
 
         return $resourceDirectory;
@@ -242,13 +242,13 @@ class ThemeProvider extends AbstractProvider
      *
      * @return MessageCatalogueInterface
      */
-    public function getDatabaseCatalogue($themeName = null)
+    public function getUserTranslatedCatalogue($themeName = null)
     {
         if (null === $themeName) {
             $themeName = $this->getThemeName();
         }
 
-        return parent::getDatabaseCatalogue($themeName);
+        return parent::getUserTranslatedCatalogue($themeName);
     }
 
     /**
@@ -270,19 +270,19 @@ class ThemeProvider extends AbstractProvider
     {
         @trigger_error(__FUNCTION__ . 'is deprecated since version 1.7.6.5 Use ThemeProvider::getXliffCatalogue() instead.', E_USER_DEPRECATED);
 
-        return $this->getXliffCatalogue();
+        return $this->getFilesystemCatalogue();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getXliffCatalogue()
+    public function getFilesystemCatalogue()
     {
         // load front office catalogue
-        $xliffCatalogue = $this->frontOfficeProvider->getXliffCatalogue();
+        $xliffCatalogue = $this->frontOfficeProvider->getFilesystemCatalogue();
 
         // overwrite with the theme's own catalogue
-        $xliffCatalogue->addCatalogue(parent::getXliffCatalogue());
+        $xliffCatalogue->addCatalogue(parent::getFilesystemCatalogue());
 
         return $xliffCatalogue;
     }
@@ -290,7 +290,7 @@ class ThemeProvider extends AbstractProvider
     /**
      * {@inheritdoc}
      */
-    public function getDefaultResourceDirectory()
+    protected function getDefaultResourceDirectory()
     {
         if (!$this->themeExtractor instanceof ThemeExtractorCache) {
             throw new \LogicException(
