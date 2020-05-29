@@ -26,7 +26,8 @@
 
 namespace PrestaShopBundle\Translation\Provider;
 
-use Symfony\Component\Translation\MessageCatalogue;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
  * Main translation provider for the Front Office
@@ -35,26 +36,29 @@ class FrontOfficeProvider extends AbstractProvider
 {
     const DEFAULT_THEME_NAME = 'classic';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTranslationDomains()
-    {
-        return [
+    public function __construct(
+        DatabaseTranslationLoader $databaseLoader,
+        string $resourceDirectory
+    ) {
+        $translationDomains = [
             '^Shop*',
             '^Modules(.*)Shop',
         ];
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFilters()
-    {
-        return [
+        $filenameFilters = [
             '#^Shop*#',
             '#^Modules(.*)Shop#',
         ];
+
+        $defaultResourceDirectory = $resourceDirectory . DIRECTORY_SEPARATOR . 'default';
+
+        parent::__construct(
+            $databaseLoader,
+            $resourceDirectory,
+            $translationDomains,
+            $filenameFilters,
+            $defaultResourceDirectory
+        );
     }
 
     /**
@@ -66,23 +70,16 @@ class FrontOfficeProvider extends AbstractProvider
     }
 
     /**
-     * @param null $themeName
+     * @param string|null $themeName
      *
-     * @return MessageCatalogue
+     * @return MessageCatalogueInterface
      */
-    public function getDatabaseCatalogue($themeName = null)
+    public function getUserTranslatedCatalogue(string $themeName = null): MessageCatalogueInterface
     {
         if (null === $themeName) {
             $themeName = self::DEFAULT_THEME_NAME;
         }
 
-        return parent::getDatabaseCatalogue($themeName);
-    }
-
-    /**{@inheritdoc}
-     */
-    public function getDefaultResourceDirectory()
-    {
-        return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
+        return parent::getUserTranslatedCatalogue($themeName);
     }
 }

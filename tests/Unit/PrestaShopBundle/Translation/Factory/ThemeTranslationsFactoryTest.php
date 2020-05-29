@@ -119,71 +119,71 @@ class ThemeTranslationsFactoryTest extends TestCase
 
         $this->translations = $this->factory->createTranslationsArray($theme, $locale);
 
-        $this->assertPropertiesTranslations($locale);
+        $this->assertPropertiesTranslations();
 
-        $this->assertTranslationsContainThemeMessages($locale);
+        $this->assertTranslationsContainThemeMessages();
 
-        $this->assertTranslationsContainCatalogueMessages($locale);
+        $this->assertTranslationsContainCatalogueMessages();
 
-        $this->assertTranslationsContainDefaultAndDatabaseMessages($locale);
+        $this->assertTranslationsContainDefaultAndDatabaseMessages();
     }
 
     private function getDefaultCatalogue()
     {
         return new MessageCatalogue(
             self::TEST_LOCALE,
-            array(
-                'DefaultDomain' => array(
+            [
+                'DefaultDomain' => [
                     'Default message' => 'Default MESSAGE',
                     'Default message bis' => 'Bis',
-                ),
-                'ShopFront' => array(
+                ],
+                'ShopFront' => [
                     'Add to Cart' => 'Add to Cart',
                     'Edit product' => 'Edit it',
-                ),
-                'messages' => array(
+                ],
+                'messages' => [
                     'foo' => 'Foo',
                     'bar' => 'Bar',
                     'baz' => 'Baz',
-                ),
-            )
+                ],
+            ]
         );
     }
 
-    private function getXliffCatalogue()
+    private function getFilesystemCatalogue()
     {
         return new MessageCatalogue(
             self::TEST_LOCALE,
-            array(
-                'DefaultDomain' => array(
+            [
+                'DefaultDomain' => [
                     'Default message' => 'Default MESSAGE override xliff',
-                ),
-                'ShopFront' => array(
+                ],
+                'ShopFront' => [
                     'Add to Cart' => 'Add to Cart override xliff',
-                ),
-                'messages' => array(
+                ],
+                'messages' => [
                     'bar' => 'Bar override xlif',
                     'baz' => 'Baz override xliff',
-                ),
-            )
+                ],
+            ]
         );
     }
 
-    private function getDatabaseCatalogue()
+    private function getUserTranslatedCatalogue()
     {
         return new MessageCatalogue(
             self::TEST_LOCALE,
-            array(
-                'DefaultDomain' => array(
+            [
+                'DefaultDomain' => [
                     'Default message' => 'Default override database',
-                ),
-                'ShopFront' => array(
+                ],
+                'ShopFront' => [
                     'Edit product' => 'Edit override database',
-                ),
-                'messages' => array(
+                ],
+                'messages' => [
                     'baz' => 'Baz is updated from database!',
-                ),
-            ) // Domains of database catalogue don't contain locale
+                ],
+            ] // Domains of database catalogue don't contain locale
         );
     }
 
@@ -221,13 +221,13 @@ class ThemeTranslationsFactoryTest extends TestCase
 
         $providerMock
             ->expects($this->any())
-            ->method('getXliffCatalogue')
-            ->willReturn($this->getXliffCatalogue());
+            ->method('getFilesystemCatalogue')
+            ->willReturn($this->getFilesystemCatalogue());
 
         $providerMock
             ->expects($this->any())
-            ->method('getDatabaseCatalogue')
-            ->willReturn($this->getDatabaseCatalogue());
+            ->method('getUserTranslatedCatalogue')
+            ->willReturn($this->getUserTranslatedCatalogue());
 
         $providerMock
             ->expects($this->any())
@@ -237,7 +237,7 @@ class ThemeTranslationsFactoryTest extends TestCase
         return $providerMock;
     }
 
-    protected function assertPropertiesTranslations($locale)
+    protected function assertPropertiesTranslations()
     {
         $this->assertInternalType('array', $this->translations);
 
@@ -248,73 +248,70 @@ class ThemeTranslationsFactoryTest extends TestCase
         $this->assertArrayHasKey('DefaultDomain', $this->translations);
     }
 
-    /**
-     * @param $locale
-     */
-    protected function assertTranslationsContainThemeMessages($locale)
+    protected function assertTranslationsContainThemeMessages()
     {
         $this->assertSame(
-            array(
+            [
+                'default' => 'Default message bis',
                 'xlf' => null,
                 'db' => null,
-            ),
+            ],
             $this->translations['DefaultDomain']['Default message bis'],
             'It should provide with default translations.'
         );
 
         $this->assertSame(
-            array(
+            [
+                'default' => 'foo',
                 'xlf' => null,
                 'db' => null,
-            ),
+            ],
             $this->translations['messages']['foo'],
             'It should provide with default translations.'
         );
     }
 
-    /**
-     * @param $locale
-     */
-    protected function assertTranslationsContainCatalogueMessages($locale)
+    protected function assertTranslationsContainCatalogueMessages()
     {
         $this->assertSame(
-            array(
+            [
+                'default' => 'Add to Cart',
                 'xlf' => 'Add to Cart override xliff',
                 'db' => null,
-            ),
+            ],
             $this->translations['ShopFront']['Add to Cart'],
             'It should provide with translations from XLIFF catalogue overriding the defaults.'
         );
 
         $this->assertSame(
-            array(
+            [
+                'default' => 'bar',
                 'xlf' => 'Bar override xlif',
                 'db' => null,
-            ),
+            ],
             $this->translations['messages']['bar'],
             'It should provide with translations from XLIFF catalogue overriding the defaults.'
         );
     }
 
-    /**
-     * @param $locale
-     */
-    protected function assertTranslationsContainDefaultAndDatabaseMessages($locale)
+    protected function assertTranslationsContainDefaultAndDatabaseMessages()
     {
         $this->assertSame(
-            array(
+            [
+                'default' => 'Default message',
                 'xlf' => 'Default MESSAGE override xliff',
                 'db' => 'Default override database',
-            ),
+            ],
             $this->translations['DefaultDomain']['Default message'],
             'It should provide with translations from XLIFF catalogue overriding the defaults and database overrides.'
         );
 
         $this->assertSame(
-            array(
+            [
+                'default' => 'baz',
                 'xlf' => 'Baz override xliff',
                 'db' => 'Baz is updated from database!',
-            ),
+            ],
             $this->translations['messages']['baz'],
             'It should provide with translations from XLIFF catalogue overriding the defaults and database overrides.'
         );

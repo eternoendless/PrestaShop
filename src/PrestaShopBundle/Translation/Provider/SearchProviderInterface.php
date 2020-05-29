@@ -34,12 +34,5 @@ interface SearchProviderInterface extends ProviderInterface
      *
      * @return self
      */
-    public function setDomain($domain);
-
-    /**
-     * @param string $locale
-     *
-     * @return self
-     */
-    public function setLocale($locale);
+    public function setDomain(string $domain);
 }

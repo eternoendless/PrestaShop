@@ -26,26 +26,31 @@
 
 namespace PrestaShopBundle\Translation\Provider;
 
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+
 /**
  * Translations provider for keys not yet put in the right domain.
  * Equivalent to so-called main "messages" domain in the Symfony ecosystem.
  */
 class OthersProvider extends AbstractProvider
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getTranslationDomains()
-    {
-        return ['^messages*'];
-    }
+    public function __construct(
+        DatabaseTranslationLoader $databaseLoader,
+        string $resourceDirectory
+    ) {
+        $translationDomains = ['^messages*'];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFilters()
-    {
-        return ['#^messages*#'];
+        $filenameFilters = ['#^messages*#'];
+
+        $defaultResourceDirectory = $resourceDirectory . DIRECTORY_SEPARATOR . 'default';
+
+        parent::__construct(
+            $databaseLoader,
+            $resourceDirectory,
+            $translationDomains,
+            $filenameFilters,
+            $defaultResourceDirectory
+        );
     }
 
     /**
@@ -54,13 +59,5 @@ class OthersProvider extends AbstractProvider
     public function getIdentifier()
     {
         return 'others';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultResourceDirectory()
-    {
-        return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }
 }

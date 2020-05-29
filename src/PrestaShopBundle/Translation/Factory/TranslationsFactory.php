@@ -25,10 +25,12 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
+declare(strict_types=1);
+
 namespace PrestaShopBundle\Translation\Factory;
 
 use PrestaShopBundle\Translation\Provider\ProviderInterface;
-use PrestaShopBundle\Translation\View\TreeBuilder;
+use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
  * This class returns a collection of translations, using a locale and an identifier.
@@ -43,33 +45,25 @@ class TranslationsFactory implements TranslationsFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createCatalogue($domainIdentifier, $locale = self::DEFAULT_LOCALE)
+    public function createCatalogue(string $domainIdentifier, string $locale = self::DEFAULT_LOCALE): MessageCatalogueInterface
     {
-        foreach ($this->providers as $provider) {
-            if ($domainIdentifier === $provider->getIdentifier()) {
-                return $provider->setLocale($locale)->getMessageCatalogue();
-            }
-        }
+        $provider = $this->getProviderByIdentifier($domainIdentifier);
 
-        throw new ProviderNotFoundException($domainIdentifier);
+        return $provider->setLocale($locale)->getMessageCatalogue();
     }
 
     /**
      * {@inheritdoc}
      */
     public function createTranslationsArray(
-        $domainIdentifier,
-        $locale = self::DEFAULT_LOCALE,
-        $theme = null,
-        $search = null
-    ) {
-        foreach ($this->providers as $provider) {
-            if ($domainIdentifier === $provider->getIdentifier()) {
-                return $this->makeTranslationArray($provider, $locale, $theme, $search);
-            }
-        }
+        string $domainIdentifier,
+        string $locale = self::DEFAULT_LOCALE,
+        ?string $theme = null,
+        ?string $search = null
+    ): array {
+        $provider = $this->getProviderByIdentifier($domainIdentifier);
 
-        throw new ProviderNotFoundException($domainIdentifier);
+        return $this->makeTranslationArray($provider, $locale, $theme, $search);
     }
 
     /**
@@ -77,7 +71,7 @@ class TranslationsFactory implements TranslationsFactoryInterface
      *
      * @return static
      */
-    public function addProvider(ProviderInterface $provider)
+    public function addProvider(ProviderInterface $provider): self
     {
         $this->providers[] = $provider;
 
@@ -89,7 +83,7 @@ class TranslationsFactory implements TranslationsFactoryInterface
      *
      * @return static
      */
-    public function setProviders(array $providers)
+    public function setProviders(array $providers): self
     {
         $this->providers = [];
         foreach ($providers as $provider) {
@@ -100,6 +94,24 @@ class TranslationsFactory implements TranslationsFactoryInterface
     }
 
     /**
+     * @param string $identifier
+     *
+     * @return ProviderInterface
+     *
+     * @throws ProviderNotFoundException
+     */
+    private function getProviderByIdentifier(string $identifier): ProviderInterface
+    {
+        foreach ($this->providers as $provider) {
+            if ($identifier === $provider->getIdentifier()) {
+                return $provider;
+            }
+        }
+
+        throw new ProviderNotFoundException($identifier);
+    }
+
+    /**
      * @param ProviderInterface $provider
      * @param string $locale
      * @param string|null $theme
@@ -107,13 +119,17 @@ class TranslationsFactory implements TranslationsFactoryInterface
      *
      * @return array
      */
-    private function makeTranslationArray(ProviderInterface $provider, $locale, $theme, $search = null)
-    {
+    private function makeTranslationArray(
+        ProviderInterface $provider,
+        string $locale,
+        ?string $theme,
+        ?string $search = null
+    ): array {
         $provider->setLocale($locale);
 
         $defaultCatalogue = $provider->getDefaultCatalogue();
-        $xliffCatalogue = $provider->getXliffCatalogue();
-        $databaseCatalogue = $provider->getDatabaseCatalogue($theme);
+        $xliffCatalogue = $provider->getFilesystemCatalogue();
+        $databaseCatalogue = $provider->getUserTranslatedCatalogue();
 
         $translations = [];
 
@@ -121,7 +137,7 @@ class TranslationsFactory implements TranslationsFactoryInterface
             $missingTranslations = 0;
 
             foreach ($messages as $translationKey => $translationValue) {
-                $data = array(
+                $data = [
                     'default' => $translationKey,
                     'xlf' => $xliffCatalogue->defines($translationKey, $domain)
                         ? $xliffCatalogue->get($translationKey, $domain)
@@ -129,7 +145,7 @@ class TranslationsFactory implements TranslationsFactoryInterface
                     'db' => $databaseCatalogue->defines($translationKey, $domain)
                         ? $databaseCatalogue->get($translationKey, $domain)
                         : null,
-                );
+                ];
 
                 // if search is empty or is in catalog default|xlf|database
                 if (empty($search) || $this->dataContainsSearchWord($search, $data)) {
@@ -141,10 +157,10 @@ class TranslationsFactory implements TranslationsFactoryInterface
                 }
             }
 
-            $translations[$domain]['__metadata'] = array(
+            $translations[$domain]['__metadata'] = [
                 'count' => count($translations[$domain]),
-                'missing_translations' => $missingTranslations
-            );
+                'missing_translations' => $missingTranslations,
+            ];
         }
 
         ksort($translations);
@@ -155,12 +171,12 @@ class TranslationsFactory implements TranslationsFactoryInterface
     /**
      * Check if data contains search word.
      *
-     * @param $search
-     * @param $data
+     * @param string|null $search
+     * @param array $data
      *
      * @return bool
      */
-    private function dataContainsSearchWord($search, $data)
+    private function dataContainsSearchWord(?string $search, array $data): bool
     {
         if (is_string($search)) {
             $search = strtolower($search);

@@ -26,25 +26,30 @@
 
 namespace PrestaShopBundle\Translation\Provider;
 
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+
 /**
  * Translation provider specific to email subjects.
  */
 class MailsProvider extends AbstractProvider
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getTranslationDomains()
-    {
-        return ['EmailsSubject*'];
-    }
+    public function __construct(
+        DatabaseTranslationLoader $databaseLoader,
+        string $resourceDirectory
+    ) {
+        $translationDomains = ['EmailsSubject*'];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFilters()
-    {
-        return ['#EmailsSubject*#'];
+        $filenameFilters = ['#EmailsSubject*#'];
+
+        $defaultResourceDirectory = $resourceDirectory . DIRECTORY_SEPARATOR . 'default';
+
+        parent::__construct(
+            $databaseLoader,
+            $resourceDirectory,
+            $translationDomains,
+            $filenameFilters,
+            $defaultResourceDirectory
+        );
     }
 
     /**
@@ -53,13 +58,5 @@ class MailsProvider extends AbstractProvider
     public function getIdentifier()
     {
         return 'mails';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultResourceDirectory()
-    {
-        return $this->resourceDirectory . DIRECTORY_SEPARATOR . 'default';
     }
 }
