@@ -41,7 +41,6 @@ use PrestaShop\PrestaShop\Core\Foundation\Filesystem\FileSystem as PsFileSystem;
 use PrestaShop\PrestaShop\Core\Image\ImageTypeRepository;
 use PrestaShop\PrestaShop\Core\Module\HookConfigurator;
 use PrestaShopBundle\Service\TranslationService;
-use PrestaShopBundle\Translation\Provider\Factory\ProviderFactory;
 use PrestaShopBundle\Translation\Provider\Type\ThemesType;
 use PrestaShopBundle\Translation\Provider\TranslationFinder;
 use PrestaShopLogger;
@@ -115,10 +114,6 @@ class ThemeManager implements AddonManagerInterface
      * @var TranslationFinder
      */
     private $translationFinder;
-    /**
-     * @var ProviderFactory
-     */
-    private $providerFactory;
 
     public function __construct(
         Shop $shop,
@@ -130,8 +125,7 @@ class ThemeManager implements AddonManagerInterface
         Finder $finder,
         HookConfigurator $hookConfigurator,
         ThemeRepository $themeRepository,
-        ImageTypeRepository $imageTypeRepository,
-        ProviderFactory $providerFactory
+        ImageTypeRepository $imageTypeRepository
     ) {
         $this->translationFinder = new TranslationFinder();
         $this->shop = $shop;
@@ -144,7 +138,6 @@ class ThemeManager implements AddonManagerInterface
         $this->hookConfigurator = $hookConfigurator;
         $this->themeRepository = $themeRepository;
         $this->imageTypeRepository = $imageTypeRepository;
-        $this->providerFactory = $providerFactory;
     }
 
     /**
@@ -512,8 +505,9 @@ class ThemeManager implements AddonManagerInterface
 
         $translationService = $kernel->getContainer()->get('prestashop.service.translation');
         $themeName = $theme->getName();
+        $providerFactory = $kernel->getContainer()->get('prestashop.translation.provider_factory');
         /** @var \PrestaShopBundle\Translation\Provider\ThemeProvider $themeProvider */
-        $themeProvider = $this->providerFactory->build(
+        $themeProvider = $providerFactory->build(
             new ThemesType($themeName)
         );
 
