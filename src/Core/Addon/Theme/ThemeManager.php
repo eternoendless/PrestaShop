@@ -511,8 +511,7 @@ class ThemeManager implements AddonManagerInterface
      */
     private function importTranslationToDatabase(Theme $theme)
     {
-        $kernel = $this->getKernel();
-        if (null === $kernel) {
+        if (null === $kernel = $this->getKernel()) {
             return;
         }
 
@@ -567,8 +566,7 @@ class ThemeManager implements AddonManagerInterface
      */
     private function getDefaultDomains($locale, $themeName)
     {
-        $kernel = $this->getKernel();
-        if (null === $kernel) {
+        if (null === $kernel = $this->getKernel()) {
             return;
         }
 
