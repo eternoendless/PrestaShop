@@ -74,12 +74,10 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
     public function testGetCatalogueForBackoffice()
     {
         $providerFactory = $this->createMock(ProviderFactory::class);
-        $backType = new BackType();
 
         $providerFactory
             ->expects($this->any())
             ->method('build')
-            ->with($backType)
             ->willReturn(
                 new BackProvider(
                     $this->translationDatabaseLoader,
@@ -125,12 +123,10 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
     public function testGetCatalogueForFrontoffice()
     {
         $providerFactory = $this->createMock(ProviderFactory::class);
-        $frontType = new FrontType();
 
         $providerFactory
             ->expects($this->any())
             ->method('build')
-            ->with($frontType)
             ->willReturn(
                 new FrontProvider(
                     $this->translationDatabaseLoader,
@@ -181,19 +177,17 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
     public function testGetCatalogueForModules()
     {
         $providerFactory = $this->createMock(ProviderFactory::class);
-        $moduleType = new ModulesType('checkpayment');
 
         $providerFactory
             ->expects($this->any())
             ->method('build')
-            ->with($moduleType)
             ->willReturn(
                 new ModulesProvider(
                     $this->translationDatabaseLoader,
                     $this->getBuiltInModuleDirectory(),
                     $this->getDefaultTranslationsDirectory(),
                     $this->container->get('prestashop.translation.loader.legacy_file'),
-                    $this->container->get('prestashop.translation.legacy_module.extractor'),
+                    $this->container->get('prestashop.translation.extractor.legacy_module'),
                     'checkpayment'
                 )
             );
@@ -245,25 +239,27 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
     public function testGetDomainCatalogueForModule()
     {
         $providerFactory = $this->createMock(ProviderFactory::class);
-        $moduleType = new ModulesType('checkPaymentShop');
 
         $providerFactory
             ->expects($this->any())
             ->method('build')
-            ->with($moduleType)
             ->willReturn(
                 new ModulesProvider(
                     $this->translationDatabaseLoader,
                     $this->getBuiltInModuleDirectory(),
                     $this->getDefaultTranslationsDirectory(),
                     $this->container->get('prestashop.translation.loader.legacy_file'),
-                    $this->container->get('prestashop.translation.legacy_module.extractor'),
+                    $this->container->get('prestashop.translation.extractor.legacy_module'),
                     'checkpayment'
                 )
             );
 
         $provider = new TranslationsCatalogueProvider($providerFactory);
-        $messages = $provider->getDomainCatalogue($moduleType, 'fr-FR', 'ModulesCheckpaymentShop');
+        $messages = $provider->getDomainCatalogue(
+            new ModulesType('checkPaymentShop'),
+            'fr-FR',
+            'ModulesCheckpaymentShop'
+        );
         $this->assertIsArray($messages);
 
         // Check integrity of translations
