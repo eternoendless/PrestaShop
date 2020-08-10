@@ -27,7 +27,7 @@
 namespace Tests\Integration\PrestaShopBundle\Translation\Provider;
 
 use PHPUnit\Framework\TestCase;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\BackProvider;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -39,9 +39,9 @@ class BackProviderTest extends TestCase
     const TRANSLATIONS_DIR = __DIR__ . '/../../../../Resources/translations/';
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|DatabaseTranslationLoader
+     * @var \PHPUnit\Framework\MockObject\MockObject|DatabaseTranslationReader
      */
-    private $databaseProvider;
+    private $databaseReader;
 
     public function setUp()
     {
@@ -62,7 +62,7 @@ class BackProviderTest extends TestCase
             ],
         ];
 
-        $this->databaseProvider = new MockDatabaseTranslationLoader($databaseContent);
+        $this->databaseReader = new MockDatabaseTranslationReader($databaseContent);
     }
 
     /**
@@ -70,7 +70,7 @@ class BackProviderTest extends TestCase
      */
     public function testItLoadsCatalogueFromXliffFilesInLocaleDirectory()
     {
-        $provider = new BackProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
+        $provider = new BackProvider($this->databaseReader, self::TRANSLATIONS_DIR);
 
         // load catalogue from translations/fr-FR
         $catalogue = $provider->getFileTranslatedCatalogue('fr-FR');
@@ -104,7 +104,7 @@ class BackProviderTest extends TestCase
      */
     public function testItExtractsDefaultCatalogueFromTranslationsDefaultFiles()
     {
-        $provider = new BackProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
+        $provider = new BackProvider($this->databaseReader, self::TRANSLATIONS_DIR);
 
         // load catalogue from translations/default
         $catalogue = $provider->getDefaultCatalogue('fr-FR', false);
@@ -144,7 +144,7 @@ class BackProviderTest extends TestCase
 
     public function testItLoadsCustomizedTranslationsFromDatabase()
     {
-        $provider = new BackProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
+        $provider = new BackProvider($this->databaseReader, self::TRANSLATIONS_DIR);
 
         // load catalogue from database translations
         $catalogue = $provider->getUserTranslatedCatalogue('fr-FR');

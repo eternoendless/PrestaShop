@@ -27,7 +27,7 @@
 namespace PrestaShopBundle\Translation\Provider;
 
 use PrestaShop\PrestaShop\Core\Exception\FileNotFoundException;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\DefaultCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\FileTranslatedCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\UserTranslatedCatalogueProvider;
@@ -49,28 +49,28 @@ class SearchProvider implements ProviderInterface
     protected $domain;
 
     /**
-     * @var DatabaseTranslationLoader
+     * @var DatabaseTranslationReader
      */
-    private $databaseLoader;
+    private $databaseReader;
     /**
      * @var string|null
      */
     private $themeName;
 
     /**
-     * @param DatabaseTranslationLoader $databaseLoader
+     * @param DatabaseTranslationReader $databaseReader
      * @param string $resourceDirectory
      * @param string $domain
      * @param string|null $themeName
      */
     public function __construct(
-        DatabaseTranslationLoader $databaseLoader,
+        DatabaseTranslationReader $databaseReader,
         string $resourceDirectory,
         string $domain,
         ?string $themeName = null
     ) {
         $this->resourceDirectory = $resourceDirectory;
-        $this->databaseLoader = $databaseLoader;
+        $this->databaseReader = $databaseReader;
         $this->domain = $domain;
         $this->themeName = $themeName;
     }
@@ -118,7 +118,7 @@ class SearchProvider implements ProviderInterface
         $translationDomains = ['^' . preg_quote($this->domain) . '([A-Za-z]|$)'];
 
         return (new UserTranslatedCatalogueProvider(
-            $this->databaseLoader,
+            $this->databaseReader,
             $translationDomains
         ))
             ->getCatalogue($locale, $this->themeName);

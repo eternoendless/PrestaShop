@@ -31,7 +31,7 @@ use PrestaShop\PrestaShop\Core\Addon\Theme\ThemeRepository;
 use PrestaShop\PrestaShop\Core\Exception\FileNotFoundException;
 use PrestaShopBundle\Translation\Extractor\ThemeExtractorCache;
 use PrestaShopBundle\Translation\Extractor\ThemeExtractorInterface;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\TranslationCatalogueProviderInterface;
 use PrestaShopBundle\Translation\Provider\FrontProvider;
 use PrestaShopBundle\Translation\Provider\ThemeProvider;
@@ -105,7 +105,7 @@ class ThemeProviderTest extends KernelTestCase
     {
         $provider = new ThemeProvider(
             $this->frontProvider,
-            $this->createMock(DatabaseTranslationLoader::class),
+            $this->createMock(DatabaseTranslationReader::class),
             $this->createMock(ThemeExtractorInterface::class),
             $this->buildThemeRepository(),
             $this->filesystem,
@@ -149,7 +149,7 @@ class ThemeProviderTest extends KernelTestCase
 
         $provider = new ThemeProvider(
             $this->frontProvider,
-            $this->createMock(DatabaseTranslationLoader::class),
+            $this->createMock(DatabaseTranslationReader::class),
             $themeExtractorMock,
             $this->buildThemeRepository(),
             $this->filesystem,

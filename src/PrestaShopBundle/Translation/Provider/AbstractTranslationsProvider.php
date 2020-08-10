@@ -28,7 +28,7 @@ declare(strict_types=1);
 
 namespace PrestaShopBundle\Translation\Provider;
 
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\DefaultCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\FileTranslatedCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\UserTranslatedCatalogueProvider;
@@ -40,7 +40,7 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 abstract class AbstractTranslationsProvider implements ProviderInterface
 {
     /**
-     * @var DatabaseTranslationLoader
+     * @var DatabaseTranslationReader
      */
     private $databaseLoader;
 
@@ -50,14 +50,14 @@ abstract class AbstractTranslationsProvider implements ProviderInterface
     private $resourceDirectory;
 
     /**
-     * @param DatabaseTranslationLoader $databaseLoader
+     * @param DatabaseTranslationReader $databaseReader
      * @param string $resourceDirectory
      */
     public function __construct(
-        DatabaseTranslationLoader $databaseLoader,
+        DatabaseTranslationReader $databaseReader,
         string $resourceDirectory
     ) {
-        $this->databaseLoader = $databaseLoader;
+        $this->databaseLoader = $databaseReader;
         $this->resourceDirectory = $resourceDirectory;
     }
 

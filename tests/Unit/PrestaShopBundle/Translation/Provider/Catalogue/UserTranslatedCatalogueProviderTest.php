@@ -30,7 +30,7 @@ namespace Tests\Unit\PrestaShopBundle\Translation\Provider\Catalogue;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\TranslationCatalogueProviderInterface;
 use PrestaShopBundle\Translation\Provider\Catalogue\UserTranslatedCatalogueProvider;
 use Symfony\Component\Translation\MessageCatalogue;
@@ -49,9 +49,9 @@ class UserTranslatedCatalogueProviderTest extends TestCase
     ];
 
     /**
-     * @var MockObject|DatabaseTranslationLoader
+     * @var MockObject|DatabaseTranslationReader
      */
-    private $databaseLoader;
+    private $databaseReader;
 
     public function setUp()
     {
@@ -60,8 +60,8 @@ class UserTranslatedCatalogueProviderTest extends TestCase
             $catalogue->add($messages, $domain);
         }
 
-        $this->databaseLoader = $this->createMock(DatabaseTranslationLoader::class);
-        $this->databaseLoader
+        $this->databaseReader = $this->createMock(DatabaseTranslationReader::class);
+        $this->databaseReader
             ->method('load')
             ->willReturn($catalogue);
     }
@@ -69,7 +69,7 @@ class UserTranslatedCatalogueProviderTest extends TestCase
     public function testGetCatalogue()
     {
         $provider = new UserTranslatedCatalogueProvider(
-            $this->databaseLoader,
+            $this->databaseReader,
             ['^ShopSomeDomain([A-Za-z]|$)']
         );
 

@@ -30,7 +30,7 @@ namespace PrestaShopBundle\Translation\Provider\Factory;
 
 use PrestaShop\PrestaShop\Core\Addon\Theme\ThemeRepository;
 use PrestaShopBundle\Translation\Extractor\ThemeExtractorInterface;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\FrontProvider;
 use PrestaShopBundle\Translation\Provider\ProviderInterface;
 use PrestaShopBundle\Translation\Provider\ThemeProvider;
@@ -41,9 +41,9 @@ use Symfony\Component\Filesystem\Filesystem;
 class ThemesProviderFactory implements ProviderFactoryInterface
 {
     /**
-     * @var DatabaseTranslationLoader
+     * @var DatabaseTranslationReader
      */
-    private $databaseTranslationLoader;
+    private $databaseTranslationReader;
     /**
      * @var ThemeExtractorInterface
      */
@@ -66,14 +66,14 @@ class ThemesProviderFactory implements ProviderFactoryInterface
     private $frontResourcesDir;
 
     public function __construct(
-        DatabaseTranslationLoader $databaseTranslationLoader,
+        DatabaseTranslationReader $databaseTranslationReader,
         ThemeExtractorInterface $themeExtractor,
         ThemeRepository $themeRepository,
         Filesystem $filesystem,
         string $themeResourcesDir,
         string $frontResourcesDir
     ) {
-        $this->databaseTranslationLoader = $databaseTranslationLoader;
+        $this->databaseTranslationReader = $databaseTranslationReader;
         $this->themeExtractor = $themeExtractor;
         $this->themeRepository = $themeRepository;
         $this->filesystem = $filesystem;
@@ -100,8 +100,8 @@ class ThemesProviderFactory implements ProviderFactoryInterface
 
         /* @var ThemesType $providerType */
         return new ThemeProvider(
-            new FrontProvider($this->databaseTranslationLoader, $this->frontResourcesDir),
-            $this->databaseTranslationLoader,
+            new FrontProvider($this->databaseTranslationReader, $this->frontResourcesDir),
+            $this->databaseTranslationReader,
             $this->themeExtractor,
             $this->themeRepository,
             $this->filesystem,

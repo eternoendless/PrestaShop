@@ -28,7 +28,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\PrestaShopBundle\Translation\Provider;
 
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\BackProvider;
 use PrestaShopBundle\Translation\Provider\Factory\ProviderFactory;
 use PrestaShopBundle\Translation\Provider\FrontProvider;
@@ -47,15 +47,15 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
     private $container;
 
     /**
-     * @var DatabaseTranslationLoader|null
+     * @var DatabaseTranslationReader|null
      */
-    private $translationDatabaseLoader;
+    private $translationDatabaseReader;
 
     protected function setUp()
     {
         self::bootKernel();
         $this->container = self::$kernel->getContainer();
-        $this->translationDatabaseLoader = $this->container->get('prestashop.translation.loader.database');
+        $this->translationDatabaseReader = $this->container->get('prestashop.translation.loader.database_reader');
 
         $langId = \Language::getIdByIso('fr', true);
         if (!$langId) {
@@ -80,7 +80,7 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
             ->method('build')
             ->willReturn(
                 new BackProvider(
-                    $this->translationDatabaseLoader,
+                    $this->translationDatabaseReader,
                     $this->getDefaultTranslationsDirectory()
                 )
             );
@@ -129,7 +129,7 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
             ->method('build')
             ->willReturn(
                 new FrontProvider(
-                    $this->translationDatabaseLoader,
+                    $this->translationDatabaseReader,
                     $this->getDefaultTranslationsDirectory()
                 )
             );
@@ -183,7 +183,7 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
             ->method('build')
             ->willReturn(
                 new ModulesProvider(
-                    $this->translationDatabaseLoader,
+                    $this->translationDatabaseReader,
                     $this->getBuiltInModuleDirectory(),
                     $this->getDefaultTranslationsDirectory(),
                     $this->container->get('prestashop.translation.loader.legacy_file'),
@@ -245,7 +245,7 @@ class TranslationsCatalogueProviderTest extends KernelTestCase
             ->method('build')
             ->willReturn(
                 new ModulesProvider(
-                    $this->translationDatabaseLoader,
+                    $this->translationDatabaseReader,
                     $this->getBuiltInModuleDirectory(),
                     $this->getDefaultTranslationsDirectory(),
                     $this->container->get('prestashop.translation.loader.legacy_file'),

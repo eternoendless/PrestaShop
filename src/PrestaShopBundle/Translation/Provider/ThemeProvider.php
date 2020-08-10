@@ -32,7 +32,7 @@ use PrestaShop\PrestaShop\Core\Addon\Theme\Theme;
 use PrestaShop\PrestaShop\Core\Addon\Theme\ThemeRepository;
 use PrestaShop\PrestaShop\Core\Exception\FileNotFoundException;
 use PrestaShopBundle\Translation\Extractor\ThemeExtractorInterface;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\FileTranslatedCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\UserTranslatedCatalogueProvider;
 use Symfony\Component\Filesystem\Filesystem;
@@ -69,9 +69,9 @@ class ThemeProvider implements ProviderInterface
      */
     private $frontProvider;
     /**
-     * @var DatabaseTranslationLoader
+     * @var DatabaseTranslationReader
      */
-    private $databaseLoader;
+    private $databaseReader;
     /**
      * @var string
      */
@@ -83,7 +83,7 @@ class ThemeProvider implements ProviderInterface
 
     /**
      * @param ProviderInterface $frontProvider Provider for core front office translations
-     * @param DatabaseTranslationLoader $databaseLoader
+     * @param DatabaseTranslationReader $databaseReader
      * @param ThemeExtractorInterface $themeExtractor
      * @param ThemeRepository $themeRepository
      * @param Filesystem $filesystem
@@ -92,7 +92,7 @@ class ThemeProvider implements ProviderInterface
      */
     public function __construct(
         ProviderInterface $frontProvider,
-        DatabaseTranslationLoader $databaseLoader,
+        DatabaseTranslationReader $databaseReader,
         ThemeExtractorInterface $themeExtractor,
         ThemeRepository $themeRepository,
         Filesystem $filesystem,
@@ -104,7 +104,7 @@ class ThemeProvider implements ProviderInterface
         $this->themeRepository = $themeRepository;
         $this->filesystem = $filesystem;
         $this->themeResourcesDirectory = $themeResourcesDir;
-        $this->databaseLoader = $databaseLoader;
+        $this->databaseReader = $databaseReader;
         $this->themeName = $themeName;
 
         $this->validateTheme();
@@ -178,7 +178,7 @@ class ThemeProvider implements ProviderInterface
         }
 
         return (new UserTranslatedCatalogueProvider(
-            $this->databaseLoader,
+            $this->databaseReader,
             $translationDomains
         ))
             ->getCatalogue($locale, $this->themeName);

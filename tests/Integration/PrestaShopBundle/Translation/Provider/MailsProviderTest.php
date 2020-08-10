@@ -27,7 +27,7 @@
 namespace Tests\Integration\PrestaShopBundle\Translation\Provider;
 
 use PHPUnit\Framework\TestCase;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\MailsProvider;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -44,7 +44,7 @@ class MailsProviderTest extends TestCase
     public function testItLoadsCatalogueFromXliffFilesInLocaleDirectory()
     {
         $provider = new MailsProvider(
-            $this->createMock(DatabaseTranslationLoader::class),
+            $this->createMock(DatabaseTranslationReader::class),
             self::TRANSLATIONS_DIR
         );
 
@@ -75,7 +75,7 @@ class MailsProviderTest extends TestCase
     public function testItExtractsDefaultCatalogueFromTranslationsDefaultFiles()
     {
         $provider = new MailsProvider(
-            $this->createMock(DatabaseTranslationLoader::class),
+            $this->createMock(DatabaseTranslationReader::class),
             self::TRANSLATIONS_DIR
         );
 

@@ -33,7 +33,7 @@ use PrestaShop\TranslationToolsBundle\Translation\Helper\DomainHelper;
 use PrestaShopBundle\Translation\DomainNormalizer;
 use PrestaShopBundle\Translation\Exception\UnsupportedLocaleException;
 use PrestaShopBundle\Translation\Extractor\LegacyModuleExtractorInterface;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\DefaultCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\FileTranslatedCatalogueProvider;
 use PrestaShopBundle\Translation\Provider\Catalogue\TranslationCatalogueProviderInterface;
@@ -78,16 +78,16 @@ class ModulesProvider implements ProviderInterface
     private $defaultCatalogueCache;
 
     /**
-     * @var DatabaseTranslationLoader
+     * @var DatabaseTranslationReader
      */
-    private $databaseLoader;
+    private $databaseReader;
     /**
      * @var string
      */
     private $moduleName;
 
     /**
-     * @param DatabaseTranslationLoader $databaseLoader
+     * @param DatabaseTranslationReader $databaseReader
      * @param string $modulesDirectory
      * @param string $translationsDirectory
      * @param LoaderInterface $legacyFileLoader
@@ -95,7 +95,7 @@ class ModulesProvider implements ProviderInterface
      * @param string $moduleName
      */
     public function __construct(
-        DatabaseTranslationLoader $databaseLoader,
+        DatabaseTranslationReader $databaseReader,
         string $modulesDirectory,
         string $translationsDirectory,
         LoaderInterface $legacyFileLoader,
@@ -104,7 +104,7 @@ class ModulesProvider implements ProviderInterface
     ) {
         $this->legacyFileLoader = $legacyFileLoader;
         $this->legacyModuleExtractor = $legacyModuleExtractor;
-        $this->databaseLoader = $databaseLoader;
+        $this->databaseReader = $databaseReader;
         $this->modulesDirectory = $modulesDirectory;
         $this->translationsDirectory = $translationsDirectory;
         $this->moduleName = $moduleName;
@@ -163,7 +163,7 @@ class ModulesProvider implements ProviderInterface
         $translationDomains = ['^' . preg_quote(DomainHelper::buildModuleBaseDomain($this->moduleName)) . '([A-Z]|$)'];
 
         return (new UserTranslatedCatalogueProvider(
-            $this->databaseLoader,
+            $this->databaseReader,
             $translationDomains
         ))
             ->getCatalogue($locale);

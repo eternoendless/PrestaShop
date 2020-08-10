@@ -31,7 +31,7 @@ namespace Tests\Unit\PrestaShopBundle\Translation\Provider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PrestaShopBundle\Translation\Extractor\LegacyModuleExtractorInterface;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use PrestaShopBundle\Translation\Provider\Catalogue\TranslationCatalogueProviderInterface;
 use PrestaShopBundle\Translation\Provider\ModulesProvider;
 use Symfony\Component\Translation\Dumper\XliffFileDumper;
@@ -74,8 +74,8 @@ class ModulesProviderTest extends TestCase
 
     public function setUp()
     {
-        /** @var MockObject|DatabaseTranslationLoader $databaseLoader */
-        $databaseLoader = $this->createMock(DatabaseTranslationLoader::class);
+        /** @var MockObject|DatabaseTranslationReader $databaseReader */
+        $databaseReader = $this->createMock(DatabaseTranslationReader::class);
         /** @var MockObject|LoaderInterface $legacyFileLoader */
         $legacyFileLoader = $this->createMock(LoaderInterface::class);
 
@@ -95,7 +95,7 @@ class ModulesProviderTest extends TestCase
         }
 
         $this->externalModuleLegacySystemProvider = (new ModulesProvider(
-            $databaseLoader,
+            $databaseReader,
             self::$tempDir,
             self::$tempDir,
             $legacyFileLoader,

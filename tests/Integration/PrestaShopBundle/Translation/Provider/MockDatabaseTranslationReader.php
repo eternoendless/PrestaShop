@@ -27,13 +27,13 @@ declare(strict_types=1);
 
 namespace Tests\Integration\PrestaShopBundle\Translation\Provider;
 
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
+use PrestaShopBundle\Translation\Loader\DatabaseTranslationReader;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * Mock database loader that will fetch from the provided structure instead of the real database
  */
-class MockDatabaseTranslationLoader extends DatabaseTranslationLoader
+class MockDatabaseTranslationReader extends DatabaseTranslationReader
 {
     /**
      * @var array
