@@ -60,11 +60,11 @@ class BackProviderTest extends TestCase
 
         $this->assertSame([
             'AdminActions',
-            'ModulesCheckpaymentAdmin',
-            'ModulesWirepaymentAdmin',
+            'AdminNavigationMenu'
         ], $domains);
+
         $this->assertCount(90, $messages['AdminActions']);
-        $this->assertCount(15, $messages['ModulesCheckpaymentAdmin']);
+        $this->assertCount(120, $messages['AdminNavigationMenu']);
 
         $this->assertSame('Enregistrer et rester', $catalogue->get('Save and stay', 'AdminActions'));
     }
@@ -93,15 +93,16 @@ class BackProviderTest extends TestCase
             'AdminActions',
             'AdminGlobal',
             'AdminNavigationMenu',
-            'ModulesCheckpaymentAdmin',
-            'ModulesWirepaymentAdmin',
         ], $domains);
+
         $this->assertCount(91, $messages['AdminActions']);
-        $this->assertCount(15, $messages['ModulesCheckpaymentAdmin']);
+        $this->assertCount(301, $messages['AdminGlobal']);
+        $this->assertCount(120, $messages['AdminNavigationMenu']);
 
         $this->assertSame('Save and stay', $catalogue->get('Save and stay', 'AdminActions'));
         $this->assertSame('Forgot your password?', $catalogue->get('Forgot your password?', 'AdminGlobal'));
 
+        // test get empty catalogue
         $catalogue = $provider->getDefaultCatalogue('fr-FR');
 
         $this->assertSame('', $catalogue->get('Save and stay', 'AdminActions'));

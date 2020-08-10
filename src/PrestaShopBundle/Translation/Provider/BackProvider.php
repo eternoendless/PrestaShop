@@ -40,7 +40,6 @@ class BackProvider extends AbstractTranslationsProvider
     {
         return [
             '#^Admin[A-Z]#',
-            '#^Modules[A-Z](.*)Admin#',
         ];
     }
 
@@ -51,7 +50,6 @@ class BackProvider extends AbstractTranslationsProvider
     {
         return [
             '^Admin[A-Z]',
-            '^Modules[A-Z](.*)Admin',
         ];
     }
 }
