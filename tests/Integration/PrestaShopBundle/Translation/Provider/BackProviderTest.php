@@ -37,6 +37,7 @@ use Symfony\Component\Translation\MessageCatalogue;
 class BackProviderTest extends TestCase
 {
     const TRANSLATIONS_DIR = __DIR__ . '/../../../../Resources/translations/';
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|DatabaseTranslationLoader
      */

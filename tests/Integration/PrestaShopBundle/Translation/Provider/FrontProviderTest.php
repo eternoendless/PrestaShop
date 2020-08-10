@@ -39,14 +39,38 @@ class FrontProviderTest extends TestCase
     const TRANSLATIONS_DIR = __DIR__ . '/../../../../Resources/translations/';
 
     /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|DatabaseTranslationLoader
+     */
+    private $databaseProvider;
+
+    public function setUp()
+    {
+        $databaseContent = [
+            [
+                'lang' => 'fr-FR',
+                'key' => 'Invalid name',
+                'translation' => 'Traduction customisée',
+                'domain' => 'ShopFormsErrors',
+                'theme' => null,
+            ],
+            [
+                'lang' => 'fr-FR',
+                'key' => 'Some made up text',
+                'translation' => 'Un texte inventé',
+                'domain' => 'ShopActions',
+                'theme' => 'classic',
+            ],
+        ];
+
+        $this->databaseProvider = new MockDatabaseTranslationLoader($databaseContent);
+    }
+
+    /**
      * Test it loads a XLIFF catalogue from the locale's `translations` directory
      */
     public function testItLoadsCatalogueFromXliffFilesInLocaleDirectory()
     {
-        $provider = new FrontProvider(
-            $this->createMock(DatabaseTranslationLoader::class),
-            self::TRANSLATIONS_DIR
-        );
+        $provider = new FrontProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
 
         // load catalogue from translations/fr-FR
         $catalogue = $provider->getFileTranslatedCatalogue('fr-FR');
@@ -58,15 +82,21 @@ class FrontProviderTest extends TestCase
         $domains = $catalogue->getDomains();
         sort($domains);
 
+        // verify all catalogues are loaded
         $this->assertSame([
-            'ModulesCheckpaymentShop',
-            'ModulesWirepaymentShop',
+            'ShopFormsErrors',
             'ShopNotificationsWarning',
         ], $domains);
-        $this->assertCount(8, $messages['ShopNotificationsWarning']);
-        $this->assertCount(19, $messages['ModulesCheckpaymentShop']);
 
+        // verify that the catalogues are complete
+        $this->assertCount(7, $messages['ShopFormsErrors']);
+        $this->assertCount(8, $messages['ShopNotificationsWarning']);
+
+        // verify that translation is loaded
         $this->assertSame('Vous n\'avez reçu aucun avoir', $catalogue->get('You have not received any credit slips.', 'ShopNotificationsWarning'));
+
+        // test it does not include translations from database loader
+        $this->assertSame('Nom incorrect', $catalogue->get('Invalid name', 'ShopFormsErrors'));
     }
 
     /**
@@ -74,10 +104,7 @@ class FrontProviderTest extends TestCase
      */
     public function testItExtractsDefaultCatalogueFromTranslationsDefaultFiles()
     {
-        $provider = new FrontProvider(
-            $this->createMock(DatabaseTranslationLoader::class),
-            self::TRANSLATIONS_DIR
-        );
+        $provider = new FrontProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
 
         // load catalogue from translations/default
         $catalogue = $provider->getDefaultCatalogue('fr-FR', false);
@@ -89,24 +116,59 @@ class FrontProviderTest extends TestCase
         $domains = $catalogue->getDomains();
         sort($domains);
 
+        // verify all catalogues are loaded
         $this->assertSame([
-            'ModulesCheckpaymentShop',
-            'ModulesWirepaymentShop',
+            'ShopFormsErrors',
+            'ShopNotificationsInfo',
             'ShopNotificationsWarning',
         ], $domains);
-        $this->assertCount(8, $messages['ShopNotificationsWarning']);
-        $this->assertCount(19, $messages['ModulesCheckpaymentShop']);
 
+        // verify that the catalogues are complete
+        $this->assertCount(7, $messages['ShopFormsErrors']);
+        $this->assertCount(1, $messages['ShopNotificationsInfo']);
+        $this->assertCount(8, $messages['ShopNotificationsWarning']);
+
+        // verify that wordings are NOT translated
         $this->assertSame(
             'You have not received any credit slips.',
             $catalogue->get('You have not received any credit slips.', 'ShopNotificationsWarning')
         );
 
+        // test it does not include translations from database loader
+        $this->assertSame('Invalid name', $catalogue->get('Invalid name', 'ShopFormsErrors'));
+
+        // test get empty catalogue
         $catalogue = $provider->getDefaultCatalogue('fr-FR');
 
         $this->assertSame(
             '',
             $catalogue->get('You have not received any credit slips.', 'ShopNotificationsWarning')
         );
+    }
+
+    public function testItLoadsCustomizedTranslationsFromDatabase()
+    {
+        $provider = new FrontProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
+
+        // load catalogue from database translations
+        $catalogue = $provider->getUserTranslatedCatalogue('fr-FR');
+
+        $this->assertInstanceOf(MessageCatalogue::class, $catalogue);
+
+        // Check integrity of translations
+        $messages = $catalogue->all();
+        $domains = $catalogue->getDomains();
+        sort($domains);
+
+        // verify all catalogues are loaded
+        $this->assertSame([
+            'ShopFormsErrors',
+        ], $domains);
+
+        // verify that the catalogues are complete
+        $this->assertCount(1, $messages['ShopFormsErrors']);
+
+        // verify translations
+        $this->assertSame('Traduction customisée', $catalogue->get('Invalid name', 'ShopFormsErrors'));
     }
 }

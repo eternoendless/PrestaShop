@@ -40,7 +40,6 @@ class FrontProvider extends AbstractTranslationsProvider
     {
         return [
            '#^Shop*#',
-           '#^Modules(.*)Shop#',
        ];
     }
 
@@ -51,7 +50,6 @@ class FrontProvider extends AbstractTranslationsProvider
     {
         return [
             '^Shop*',
-            '^Modules(.*)Shop',
         ];
     }
 }
