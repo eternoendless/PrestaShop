@@ -33,7 +33,7 @@ use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 /**
- * Gets catalogue translated by the user himself ans stored in the database.
+ * Gets catalogue translated by the user and stored in the database.
  */
 class UserTranslatedCatalogueProvider implements TranslationCatalogueProviderInterface
 {
@@ -71,7 +71,6 @@ class UserTranslatedCatalogueProvider implements TranslationCatalogueProviderInt
 
         foreach ($this->translationDomains as $translationDomain) {
             $domainCatalogue = $this->databaseLoader->load(
-                null,
                 $locale,
                 $translationDomain,
                 $themeName

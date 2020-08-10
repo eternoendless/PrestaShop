@@ -37,16 +37,39 @@ use Symfony\Component\Translation\MessageCatalogue;
 class BackProviderTest extends TestCase
 {
     const TRANSLATIONS_DIR = __DIR__ . '/../../../../Resources/translations/';
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|DatabaseTranslationLoader
+     */
+    private $databaseProvider;
+
+    public function setUp()
+    {
+        $databaseContent = [
+            [
+                'lang' => 'fr-FR',
+                'key' => 'Uninstall',
+                'translation' => 'Traduction customisée',
+                'domain' => 'AdminActions',
+                'theme' => null,
+            ],
+            [
+                'lang' => 'fr-FR',
+                'key' => 'Some made up text',
+                'translation' => 'Un texte inventé',
+                'domain' => 'ShopActions',
+                'theme' => 'classic',
+            ],
+        ];
+
+        $this->databaseProvider = new MockDatabaseTranslationLoader($databaseContent);
+    }
 
     /**
      * Test it loads a XLIFF catalogue from the locale's `translations` directory
      */
     public function testItLoadsCatalogueFromXliffFilesInLocaleDirectory()
     {
-        $provider = new BackProvider(
-            $this->createMock(DatabaseTranslationLoader::class),
-            self::TRANSLATIONS_DIR
-        );
+        $provider = new BackProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
 
         // load catalogue from translations/fr-FR
         $catalogue = $provider->getFileTranslatedCatalogue('fr-FR');
@@ -58,15 +81,21 @@ class BackProviderTest extends TestCase
         $domains = $catalogue->getDomains();
         sort($domains);
 
+        // verify all catalogues are loaded
         $this->assertSame([
             'AdminActions',
-            'AdminNavigationMenu'
+            'AdminNavigationMenu',
         ], $domains);
 
+        // verify that the catalogues are complete
         $this->assertCount(90, $messages['AdminActions']);
         $this->assertCount(120, $messages['AdminNavigationMenu']);
 
+        // verify that translation is loaded
         $this->assertSame('Enregistrer et rester', $catalogue->get('Save and stay', 'AdminActions'));
+
+        // test it does not include translations from database loader
+        $this->assertSame('Désinstaller', $catalogue->get('Uninstall', 'AdminActions'));
     }
 
     /**
@@ -74,10 +103,7 @@ class BackProviderTest extends TestCase
      */
     public function testItExtractsDefaultCatalogueFromTranslationsDefaultFiles()
     {
-        $provider = new BackProvider(
-            $this->createMock(DatabaseTranslationLoader::class),
-            self::TRANSLATIONS_DIR
-        );
+        $provider = new BackProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
 
         // load catalogue from translations/default
         $catalogue = $provider->getDefaultCatalogue('fr-FR', false);
@@ -89,23 +115,55 @@ class BackProviderTest extends TestCase
         $domains = $catalogue->getDomains();
         sort($domains);
 
+        // verify all catalogues are loaded
         $this->assertSame([
             'AdminActions',
             'AdminGlobal',
             'AdminNavigationMenu',
         ], $domains);
 
+        // verify that the catalogues are complete
         $this->assertCount(91, $messages['AdminActions']);
         $this->assertCount(301, $messages['AdminGlobal']);
         $this->assertCount(120, $messages['AdminNavigationMenu']);
 
+        // verify that wordings are NOT translated
         $this->assertSame('Save and stay', $catalogue->get('Save and stay', 'AdminActions'));
         $this->assertSame('Forgot your password?', $catalogue->get('Forgot your password?', 'AdminGlobal'));
+
+        // test it does not include translations from database loader
+        $this->assertSame('Uninstall', $catalogue->get('Uninstall', 'AdminActions'));
 
         // test get empty catalogue
         $catalogue = $provider->getDefaultCatalogue('fr-FR');
 
         $this->assertSame('', $catalogue->get('Save and stay', 'AdminActions'));
         $this->assertSame('', $catalogue->get('Forgot your password?', 'AdminGlobal'));
+    }
+
+    public function testItLoadsCustomizedTranslationsFromDatabase()
+    {
+        $provider = new BackProvider($this->databaseProvider, self::TRANSLATIONS_DIR);
+
+        // load catalogue from database translations
+        $catalogue = $provider->getUserTranslatedCatalogue('fr-FR');
+
+        $this->assertInstanceOf(MessageCatalogue::class, $catalogue);
+
+        // Check integrity of translations
+        $messages = $catalogue->all();
+        $domains = $catalogue->getDomains();
+        sort($domains);
+
+        // verify all catalogues are loaded
+        $this->assertSame([
+            'AdminActions',
+        ], $domains);
+
+        // verify that the catalogues are complete
+        $this->assertCount(1, $messages['AdminActions']);
+
+        // verify translations
+        $this->assertSame('Traduction customisée', $catalogue->get('Uninstall', 'AdminActions'));
     }
 }

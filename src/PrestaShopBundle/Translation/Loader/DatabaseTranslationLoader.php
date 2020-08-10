@@ -31,10 +31,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use PrestaShopBundle\Entity\Lang;
 use PrestaShopBundle\Entity\Translation;
-use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
-class DatabaseTranslationLoader implements LoaderInterface
+class DatabaseTranslationLoader
 {
     /** @var EntityManagerInterface */
     protected $entityManager;
@@ -48,11 +47,15 @@ class DatabaseTranslationLoader implements LoaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Loads all user translations according to search parameters
      *
-     * @todo: this method doesn't match the interface
+     * @param string $locale Translation language
+     * @param string $domainSearch Regex for domain pattern search
+     * @param string|null $theme [default=null] Theme name
+     *
+     * @return MessageCatalogue
      */
-    public function load($resource, $locale, $domain = 'messages', $theme = null)
+    public function load(string $locale, string $domainSearch, ?string $theme = null): MessageCatalogue
     {
         static $langs = [];
         $catalogue = new MessageCatalogue($locale);
@@ -77,7 +80,7 @@ class DatabaseTranslationLoader implements LoaderInterface
 
         $this->addThemeConstraint($queryBuilder, $theme);
 
-        $this->addDomainConstraint($queryBuilder, $domain);
+        $this->addDomainConstraint($queryBuilder, $domainSearch);
 
         $translations = $queryBuilder
             ->getQuery()
