@@ -31,7 +31,7 @@ namespace PrestaShopBundle\Translation\Provider;
 /**
  * Provides translation catalogues for Backoffice.
  */
-class BackProvider extends TranslationsProvider
+class BackProvider extends AbstractTranslationsProvider
 {
     /**
      * @return array|string[]

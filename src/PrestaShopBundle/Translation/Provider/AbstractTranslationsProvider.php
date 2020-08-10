@@ -37,7 +37,7 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 /**
  * Abstract class for the generic catalogue providers.
  */
-abstract class TranslationsProvider implements ProviderInterface
+abstract class AbstractTranslationsProvider implements ProviderInterface
 {
     /**
      * @var DatabaseTranslationLoader
